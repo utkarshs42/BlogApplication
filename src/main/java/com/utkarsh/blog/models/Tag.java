@@ -3,10 +3,11 @@ package com.utkarsh.blog.models;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "comment")
-public class Comment {
+@Table(name = "tag")
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -15,21 +16,14 @@ public class Comment {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "comment")
-    private String comment;
-
     @Column(name = "created_at")
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Post> posts;
 
     public int getId() {
         return id;
@@ -47,22 +41,6 @@ public class Comment {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -77,13 +55,5 @@ public class Comment {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
     }
 }
