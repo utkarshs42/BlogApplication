@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        select {
+            height: auto;
+        }
+
+        input[type="submit"] {
+            margin-top: 20px;
+            background-color: black;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .note {
+            color: gray;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Edit Blog Post</h2>
+
+    <form th:action="@{/posts/update}" th:object="${post}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <label>Title:</label>
+        <input type="text" th:field="*{title}" required />
+
+        <label>Excerpt:</label>
+        <textarea th:field="*{excerpt}" rows="2" required></textarea>
+
+        <label>Content:</label>
+        <textarea th:field="*{content}" rows="6" required></textarea>
+
+        <label>Author:</label>
+        <input type="text" th:field="*{author}" required />
+
+        <label>Select Tags (Max 5):</label>
+        <select name="selectedTagIds" multiple size="6">
+            <option th:each="tag : ${tagList}"
+                    th:value="${tag.id}"
+                    th:text="${tag.name}"
+                    th:selected="${post.tags.contains(tag)}">
+            </option>
+        </select>
+
+        <input type="submit" value="Update Post" />
+    </form>
+</div>
+
+</body>
+</html>

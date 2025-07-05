@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -50,4 +51,26 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    @GetMapping("/{id}")
+    public String getPost(@PathVariable Integer id, Model model){
+        Post post = postService.getPostById(id);
+        model.addAttribute("post",post);
+        return "view-post";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editPost(@PathVariable Integer id,Model model){
+        Post post = postService.getPostById(id);
+        List<Tag> tagList = tagService.getTags();
+        model.addAttribute("tagList",tagList);
+        model.addAttribute("post",post);
+        return "edit-post";
+    }
+
+    @PostMapping("/update")
+    public String updatePost(@ModelAttribute Post post,
+                             @RequestParam("selectedTagIds") List<Integer> selectedTagIds){
+        postService.updatePost(post, selectedTagIds);
+        return "redirect:/posts/" + post.getId();
+    }
 }

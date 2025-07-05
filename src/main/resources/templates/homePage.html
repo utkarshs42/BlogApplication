@@ -124,7 +124,7 @@
 <div th:if="${posts.size() > 0}" class="card-container">
     <div class="card" th:each="post : ${posts}">
         <h2>
-            <a th:href="@{/posts/view/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>
+            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>
         </h2>
 
         <div class="tags">

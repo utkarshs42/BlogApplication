@@ -1,8 +1,6 @@
 package com.utkarsh.blog.models;
 
 import jakarta.persistence.*;
-import org.hibernate.boot.beanvalidation.IntegrationException;
-
 import java.util.Date;
 
 @Entity
@@ -20,7 +18,7 @@ public class Comment {
     private String email;
 
     @Column(name = "comment")
-    private String comment;
+    private String content;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -56,12 +54,12 @@ public class Comment {
         this.email = email;
     }
 
-    public String getComment() {
-        return comment;
+    public String getContent() {
+        return content;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getCreatedAt() {

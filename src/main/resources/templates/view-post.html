@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${post.title}">View Post</title>
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #eaeaea;
+        color: #000;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 90%;
+        margin: 5% auto;
+        background-color: #fff;
+        padding: 30px;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .home-button {
+        background-color: #000;
+        color: #fff;
+        padding: 6px 14px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
+    h1 {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    .author {
+        font-size: 14px;
+        color: #444;
+        margin-bottom: 20px;
+    }
+
+    .content {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 15px;
+    }
+
+    .actions a {
+        padding: 8px 16px;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .menu {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+
+    .dot-button {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .menu-content {
+        display: none;
+        position: absolute;
+        top: 25px;
+        right: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 8px;
+        z-index: 1;
+    }
+
+    .menu:hover .menu-content {
+        display: block;
+    }
+
+    .menu-content form,
+    .menu-content a {
+        display: block;
+        margin: 5px 0;
+        text-decoration: none;
+        color: #000;
+        font-size: 14px;
+    }
+
+    .menu-content input[type="submit"] {
+        background: none;
+        border: none;
+        color: #000;
+        cursor: pointer;
+        padding: 0;
+        font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-bar">
+    <a th:href="@{/posts}" class="home-button">Home</a>
+  </div>
+
+  <div class="menu">
+    <button class="dot-button">&#x22EE;</button>
+    <div class="menu-content">
+      <a th:href="@{'/posts/edit/' + ${post.id}}">Edit</a>
+      <form th:action="@{'/posts/deletePost'}" method="post">
+        <input type="hidden" name="id" th:value="${post.id}" />
+        <input type="submit" value="Delete" />
+      </form>
+    </div>
+  </div>
+
+  <h1 th:text="${post.title}">Post Title</h1>
+  <p class="author" th:text="'By ' + ${post.author}">Author Name</p>
+
+  <div class="content" th:text="${post.content}">
+    Post content goes here...
+  </div>
+
+  <div class="actions">
+    <a th:href="@{'/comments/' + ${post.id}}">Comment</a>
+  </div>
+</div>
+</body>
+</html>

@@ -52,4 +52,39 @@ public class PostService {
     public void deletePost(Integer id) {
         postRepository.deleteById(id);
     }
+
+    public Post getPostById(Integer id) {
+        Optional<Post> postOptional = postRepository.findById(id);
+        if(postOptional.isPresent()){
+            return postOptional.get();
+        }else{
+            return null;   //TODO : Throw new post now found exception
+        }
+    }
+
+    public void updatePost(Post post, List<Integer> selectedTagIds) {
+        Post oldPost = postRepository.findById(post.getId())
+                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        post.setCreatedAt(oldPost.getCreatedAt());
+        post.setUpdatedAt(new Date());
+        if(oldPost.getComments() != null){
+            post.setComments(oldPost.getComments());
+        }
+
+        List<Tag> tags = new ArrayList<>();
+        for(int tagId : selectedTagIds){
+            Optional<Tag> tagOptional = tagRepository.findById(tagId);
+            if(tagOptional.isPresent()){
+                Tag tag = tagOptional.get();
+                if(tag.getPosts()==null){
+                    tag.setPosts(new ArrayList<>());
+                }
+                tag.getPosts().add(post);
+                tags.add(tag);
+            }
+        }
+        post.setTags(tags);
+        postRepository.save(post);
+    }
 }
