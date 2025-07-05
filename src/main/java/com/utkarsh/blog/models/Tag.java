@@ -11,9 +11,9 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(name = "created_at")
@@ -25,11 +25,25 @@ public class Tag {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Post> posts;
 
-    public int getId() {
+    public Tag() {
+    }
+
+    public Tag(String name, Date createdAt, Date updatedAt) {
+        this.name = name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Tag(String name, Date createdAt) {
+        this.name = name;
+        this.createdAt = createdAt;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -56,4 +70,13 @@ public class Tag {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
 }

@@ -11,13 +11,13 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "title")
     private String title;
 
-    @Column(name = "exprect")
-    private String exprect;
+    @Column(name = "excerpt")
+    private String excerpt;
 
     @Column(name = "content")
     private String content;
@@ -48,11 +48,11 @@ public class Post {
     )
     private List<Tag> tags;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -64,12 +64,12 @@ public class Post {
         this.title = title;
     }
 
-    public String getExprect() {
-        return exprect;
+    public String getExcerpt() {
+        return excerpt;
     }
 
-    public void setExprect(String exprect) {
-        this.exprect = exprect;
+    public void setExcerpt(String excerpt) {
+        this.excerpt = excerpt;
     }
 
     public String getContent() {
@@ -126,5 +126,13 @@ public class Post {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

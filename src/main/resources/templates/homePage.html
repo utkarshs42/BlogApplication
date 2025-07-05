@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Blog Posts</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .action-buttons input[type="submit"],
+        .action-buttons a {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .action-buttons input[type="submit"]:hover,
+        .action-buttons a:hover {
+            background-color: #2980b9;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .card h2 a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card h2 a:hover {
+            text-decoration: underline;
+        }
+
+        .tags {
+            margin: 5px 0;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .excerpt {
+            margin: 10px 0;
+            color: #444;
+        }
+
+        .author {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .delete-form {
+            margin-top: 10px;
+        }
+
+        .delete-form input[type="submit"] {
+            background-color: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .no-posts {
+            text-align: center;
+            color: #777;
+            font-size: 18px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>All Blog Posts</h1>
+
+<div class="action-buttons">
+    <form th:action="@{/posts/new-post}" method="get">
+        <input type="submit" value="Add New Post">
+    </form>
+
+    <a th:href="@{/tags/new}">Add New Tag</a>
+</div>
+
+<div th:if="${posts.size() > 0}" class="card-container">
+    <div class="card" th:each="post : ${posts}">
+        <h2>
+            <a th:href="@{/posts/view/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>
+        </h2>
+
+        <div class="tags">
+            <span th:each="tag : ${post.tags}" th:text="${tag.name}" style="margin-right: 8px;">Tag</span>
+        </div>
+
+        <div class="excerpt" th:text="${post.excerpt}">This is the excerpt</div>
+        <div class="author"><strong>Author:</strong> <span th:text="${post.author}">Author</span></div>
+
+        <form class="delete-form" th:action="@{/posts/deletePost}" method="post">
+            <input type="hidden" name="id" th:value="${post.id}" />
+            <input type="submit" value="Delete" />
+        </form>
+    </div>
+</div>
+
+<div th:if="${posts.size() == 0}" class="no-posts">
+    <p>No posts available.</p>
+</div>
+
+</body>
+</html>

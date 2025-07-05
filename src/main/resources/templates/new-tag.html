@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Create New Tag</title>
+  <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f4;
+        padding: 50px;
+    }
+
+    .container {
+        background-color: #fff;
+        width: 400px;
+        margin: auto;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
+
+    input[type="text"]:hover,
+    input[type="text"]:focus {
+        border-color: #007BFF;
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007BFF;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Create a New Tag</h1>
+
+  <form th:action="@{/tags/add}" th:object="${tag}" method="post">
+    <label for="name">Tag Name:</label>
+    <input type="text" id="name" th:field="*{name}" required/>
+
+    <button type="submit">Create Tag</button>
+  </form>
+</div>
+
+</body>
+</html>
