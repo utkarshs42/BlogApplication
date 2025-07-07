@@ -4,8 +4,12 @@ import com.utkarsh.blog.models.Post;
 import com.utkarsh.blog.models.Tag;
 import com.utkarsh.blog.repositories.PostRepository;
 import com.utkarsh.blog.repositories.TagRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,9 +27,23 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public List<Post> getPosts(){
-       List<Post> posts = postRepository.findAll();
-       return posts;
+    public Page<Post> getPosts(int page,int size, String sortField, String sortDir,
+                               List<Integer> tagIds){
+        Sort sort;
+        if(sortDir.equals("desc")){
+            sort = Sort.by(sortField).descending();
+        }else{
+            sort = Sort.by(sortField).ascending();
+        }
+        Pageable pageable = PageRequest.of(page,size,sort);
+        Page<Post> postPage;
+        if(tagIds==null||tagIds.isEmpty()){
+            postPage = postRepository.findAll(pageable);
+        }else{
+            postPage = postRepository.findByFilteredTags(tagIds,pageable);
+        }
+
+       return postPage;
     }
 
     public void addPost(Post post , List<Integer> tagIds) {
@@ -65,7 +83,7 @@ public class PostService {
     public void updatePost(Post post, List<Integer> selectedTagIds) {
         Post oldPost = postRepository.findById(post.getId())
                     .orElseThrow(() -> new RuntimeException("Comment not found"));
-
+        post.setPublishedAt(oldPost.getPublishedAt());
         post.setCreatedAt(oldPost.getCreatedAt());
         post.setUpdatedAt(new Date());
         if(oldPost.getComments() != null){
@@ -87,4 +105,13 @@ public class PostService {
         post.setTags(tags);
         postRepository.save(post);
     }
+
+    public Page<Post> getPostBySearch(String keyword,int page, int size){
+        Sort sort = Sort.by("publishedAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Post> postPage = postRepository.findPostBySearch(keyword,pageable);
+        return postPage;
+    }
+
+
 }

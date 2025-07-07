@@ -4,11 +4,11 @@ import com.utkarsh.blog.models.Post;
 import com.utkarsh.blog.models.Tag;
 import com.utkarsh.blog.services.PostService;
 import com.utkarsh.blog.services.TagService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -23,9 +23,26 @@ public class PostController {
     }
 
     @GetMapping
-    public String getPosts(Model model){
-        List<Post> posts = postService.getPosts();
-        model.addAttribute("posts",posts);
+    public String getPosts(@RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size,
+                           @RequestParam(defaultValue = "publishedAt") String sortField,
+                           @RequestParam(defaultValue = "desc") String sortDir,
+                           @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+                           Model model){
+
+        Page<Post> postPage = postService.getPosts(page,size,sortField,sortDir,tagIds);
+        List<Tag> tags = tagService.getTags();
+
+        model.addAttribute("posts",postPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+
+        model.addAttribute("tags",tags);
+        model.addAttribute("selectedTagIds", tagIds);
+
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+
         return "homePage";
     }
 
@@ -72,5 +89,20 @@ public class PostController {
                              @RequestParam("selectedTagIds") List<Integer> selectedTagIds){
         postService.updatePost(post, selectedTagIds);
         return "redirect:/posts/" + post.getId();
+    }
+
+    @GetMapping("/search")
+    public String getPostBySearch(@RequestParam("keyword") String keyword,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "9") int size,
+                                  Model model){
+        Page<Post> postPage = postService.getPostBySearch(keyword, page, size);
+
+        model.addAttribute("posts", postPage.getContent());
+        model.addAttribute("currentPage",page);
+        model.addAttribute("totalPages",postPage.getTotalPages());
+        model.addAttribute("keyword",keyword);
+
+        return "view-searched-posts";
     }
 }
