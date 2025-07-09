@@ -107,11 +107,9 @@ public class PostService {
     }
 
     public Page<Post> getPostBySearch(String keyword,int page, int size){
-        Sort sort = Sort.by("publishedAt");
+        Sort sort = Sort.by("publishedAt").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Post> postPage = postRepository.findPostBySearch(keyword,pageable);
         return postPage;
     }
-
-
 }

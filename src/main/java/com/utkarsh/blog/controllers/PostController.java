@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 @Controller
@@ -28,14 +29,20 @@ public class PostController {
                            @RequestParam(defaultValue = "publishedAt") String sortField,
                            @RequestParam(defaultValue = "desc") String sortDir,
                            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+                           @RequestParam(value = "keyword",required = false) String keyword,
                            Model model){
-
-        Page<Post> postPage = postService.getPosts(page,size,sortField,sortDir,tagIds);
+        Page<Post> postPage;
+        if (keyword != null && !keyword.isBlank()) {
+            postPage = postService.getPostBySearch(keyword, page, size);
+        } else {
+            postPage = postService.getPosts(page, size, sortField, sortDir, tagIds);
+        }
         List<Tag> tags = tagService.getTags();
 
         model.addAttribute("posts",postPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("keyword",keyword);
 
         model.addAttribute("tags",tags);
         model.addAttribute("selectedTagIds", tagIds);
@@ -91,18 +98,25 @@ public class PostController {
         return "redirect:/posts/" + post.getId();
     }
 
-    @GetMapping("/search")
+   /* @GetMapping("/search")
     public String getPostBySearch(@RequestParam("keyword") String keyword,
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "9") int size,
                                   Model model){
         Page<Post> postPage = postService.getPostBySearch(keyword, page, size);
+        List<Tag> tags = tagService.getTags();
 
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("currentPage",page);
         model.addAttribute("totalPages",postPage.getTotalPages());
         model.addAttribute("keyword",keyword);
 
-        return "view-searched-posts";
-    }
+        model.addAttribute("tags",tags);
+        model.addAttribute("selectedTagIds", null);
+
+        model.addAttribute("sortField", "publishedAt");
+        model.addAttribute("sortDir", "desc");
+
+        return "homePage";
+    }*/
 }
