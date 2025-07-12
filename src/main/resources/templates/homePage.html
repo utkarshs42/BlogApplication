@@ -24,11 +24,8 @@
             width: 200px;
             padding: 20px;
             border-right: 1px solid #ccc;
-        }
-
-        .main {
-            flex-grow: 1;
-            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
         }
 
         .filter-form label {
@@ -46,6 +43,19 @@
             border: 1px solid #000;
             background: transparent;
             cursor: pointer;
+        }
+
+        .filter-scroll {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+
+        .main {
+            flex-grow: 1;
+            padding: 20px;
         }
 
         .action-buttons {
@@ -105,7 +115,6 @@
             color: white;
         }
 
-       
         .read-more-button {
             display: inline-block;
             background-color: black;
@@ -116,6 +125,7 @@
             border-radius: 4px;
             margin-top: 10px;
         }
+
         .read-more-button:hover {
             background-color: #333;
         }
@@ -132,13 +142,32 @@
         <form class="filter-form" th:action="@{/posts}" method="get">
             <div>
                 <strong>Tags</strong><br/>
-                <label th:each="tag : ${tags}">
-                    <input type="checkbox" name="tagIds" th:value="${tag.id}"
-                           th:checked="${selectedTagIds != null and selectedTagIds.contains(tag.id)}"/>
-                    <span th:text="${tag.name}">Tag Name</span>
-                </label>
+                <div class="filter-scroll">
+                    <label th:each="tag : ${tags}">
+                        <input type="checkbox" name="tagIds" th:value="${tag.id}"
+                               th:checked="${selectedTagIds != null and selectedTagIds.contains(tag.id)}"/>
+                        <span th:text="${tag.name}">Tag Name</span>
+                    </label>
+                </div>
             </div>
-            <button type="submit">Filter</button>
+
+            <div>
+                <strong>Authors</strong><br/>
+                <div class="filter-scroll">
+                    <label th:each="author : ${authors}">
+                        <input type="checkbox" name="selectedAuthors" th:value="${author}"
+                               th:checked="${selectedAuthors != null and selectedAuthors.contains(author)}"/>
+                        <span th:text="${author}">Author</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preserve other filters -->
+            <input type="hidden" name="sortField" th:value="${sortField}" />
+            <input type="hidden" name="sortDirection" th:value="${sortDirection}" />
+            <input type="hidden" name="keyword" th:value="${keyword}" />
+
+            <button type="submit">Apply Filters</button>
         </form>
     </div>
 
@@ -148,25 +177,35 @@
         <div class="action-buttons">
             <!-- Sorting Form -->
             <form th:action="@{/posts}" method="get">
+                <input type="hidden" name="keyword" th:value="${keyword}" />
+                <input type="hidden" name="tagIds" th:each="id : ${selectedTagIds}" th:value="${id}" />
+                <input type="hidden" name="selectedAuthors" th:each="author : ${selectedAuthors}" th:value="${author}" />
+
                 <select name="sortField">
                     <option value="title" th:selected="${sortField == 'title'}">Title</option>
                     <option value="publishedAt" th:selected="${sortField == 'publishedAt'}">Published At</option>
                 </select>
 
-                <select name="sortDir">
-                    <option value="asc" th:selected="${sortDir == 'asc'}">Asc</option>
-                    <option value="desc" th:selected="${sortDir == 'desc'}">Desc</option>
+                <select name="sortDirection">
+                    <option value="asc" th:selected="${sortDirection == 'asc'}">Asc</option>
+                    <option value="desc" th:selected="${sortDirection == 'desc'}">Desc</option>
                 </select>
 
                 <button type="submit">Sort</button>
             </form>
+
             <!-- Search Form -->
             <form th:action="@{/posts}" method="get">
+                <input type="hidden" name="sortField" th:value="${sortField}" />
+                <input type="hidden" name="sortDirection" th:value="${sortDirection}" />
+                <input type="hidden" name="tagIds" th:each="id : ${selectedTagIds}" th:value="${id}" />
+                <input type="hidden" name="selectedAuthors" th:each="author : ${selectedAuthors}" th:value="${author}" />
+
                 <input type="text" name="keyword" placeholder="Search..." th:value="${keyword}" required />
                 <input type="submit" value="Search" />
             </form>
 
-            <!-- Add Buttons -->
+            <!-- Add Post Button -->
             <form th:action="@{/posts/new-post}" method="get">
                 <input type="submit" value="Add New Post">
             </form>
@@ -174,7 +213,7 @@
             <a th:href="@{/tags/new}">Add New Tag</a>
         </div>
 
-        <!-- Posts -->
+        <!-- Posts List -->
         <div th:if="${posts.size() > 0}">
             <div class="card" th:each="post : ${posts}">
                 <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a></h2>
@@ -198,7 +237,7 @@
             </div>
         </div>
 
-        <!-- No Posts -->
+        <!-- No Posts Found -->
         <div th:if="${posts.size() == 0}">
             <p>No posts found.</p>
         </div>
@@ -207,13 +246,14 @@
         <div class="pagination" th:if="${totalPages > 1}">
             <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                th:href="@{/posts(
-           page=${i},
-           size=10,
-           sortField=${sortField},
-           sortDir=${sortDir},
-           tagIds=${selectedTagIds},
-           keyword=${keyword}
-       )}"
+                   page=${i},
+                   size=10,
+                   sortField=${sortField},
+                   sortDirection=${sortDirection},
+                   keyword=${keyword},
+                   tagIds=${selectedTagIds},
+                   selectedAuthors=${selectedAuthors}
+               )}"
                th:text="${i + 1}"
                th:classappend="${i == currentPage} ? 'active'">
             </a>

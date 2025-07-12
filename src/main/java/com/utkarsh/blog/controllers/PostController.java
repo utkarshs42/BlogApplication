@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLOutput;
 import java.util.List;
 
 @Controller
@@ -27,17 +26,19 @@ public class PostController {
     public String getPosts(@RequestParam(defaultValue = "0") int page,
                            @RequestParam(defaultValue = "10") int size,
                            @RequestParam(defaultValue = "publishedAt") String sortField,
-                           @RequestParam(defaultValue = "desc") String sortDir,
-                           @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
-                           @RequestParam(value = "keyword",required = false) String keyword,
+                           @RequestParam(defaultValue = "desc") String sortDirection,
+                           @RequestParam(value="keyword",required = false) String keyword,
+                           @RequestParam(value = "tagIds", required = false) List<Integer> selectedTagIds,
+                           @RequestParam(value = "selectedAuthors",required = false) List<String> selectedAuthors,
                            Model model){
         Page<Post> postPage;
         if (keyword != null && !keyword.isBlank()) {
             postPage = postService.getPostBySearch(keyword, page, size);
         } else {
-            postPage = postService.getPosts(page, size, sortField, sortDir, tagIds);
+            postPage = postService.getPosts(page, size, sortField, sortDirection, selectedTagIds, selectedAuthors);
         }
         List<Tag> tags = tagService.getTags();
+        List<String> authors = postService.getAuthors();
 
         model.addAttribute("posts",postPage.getContent());
         model.addAttribute("currentPage", page);
@@ -45,10 +46,13 @@ public class PostController {
         model.addAttribute("keyword",keyword);
 
         model.addAttribute("tags",tags);
-        model.addAttribute("selectedTagIds", tagIds);
+        model.addAttribute("selectedTagIds", selectedTagIds);
+
+        model.addAttribute("authors",authors);
+        model.addAttribute("selectedAuthors",selectedAuthors);
 
         model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("sortDirection", sortDirection);
 
         return "homePage";
     }

@@ -28,7 +28,7 @@ public class PostService {
     }
 
     public Page<Post> getPosts(int page,int size, String sortField, String sortDir,
-                               List<Integer> tagIds){
+                               List<Integer> tagIds, List<String> selectedAuthors){
         Sort sort;
         if(sortDir.equals("desc")){
             sort = Sort.by(sortField).descending();
@@ -37,12 +37,15 @@ public class PostService {
         }
         Pageable pageable = PageRequest.of(page,size,sort);
         Page<Post> postPage;
-        if(tagIds==null||tagIds.isEmpty()){
+        if((tagIds==null||tagIds.isEmpty()) && (selectedAuthors==null || selectedAuthors.isEmpty())){
             postPage = postRepository.findAll(pageable);
-        }else{
+        }else if(selectedAuthors==null || selectedAuthors.isEmpty()){
             postPage = postRepository.findByFilteredTags(tagIds,pageable);
+        }else if(tagIds==null||tagIds.isEmpty()){
+            postPage = postRepository.findByFilteredAuthor(selectedAuthors,pageable);
+        }else{
+            postPage = postRepository.findByFilteredAuthorAndTags(tagIds,selectedAuthors,pageable);
         }
-
        return postPage;
     }
 
@@ -109,7 +112,10 @@ public class PostService {
     public Page<Post> getPostBySearch(String keyword,int page, int size){
         Sort sort = Sort.by("publishedAt").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Post> postPage = postRepository.findPostBySearch(keyword,pageable);
-        return postPage;
+        return postRepository.findPostBySearch(keyword,pageable);
+    }
+
+    public List<String> getAuthors() {
+        return postRepository.getAuthors();
     }
 }
