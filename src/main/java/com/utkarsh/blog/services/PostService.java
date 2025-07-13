@@ -19,31 +19,32 @@ import java.util.Optional;
 @Service
 public class PostService {
 
-    private PostRepository postRepository;
-    private TagRepository tagRepository;
+    private final PostRepository postRepository;
+    private final TagRepository tagRepository;
 
     public PostService(PostRepository postRepository, TagRepository tagRepository){
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
     }
 
-    public Page<Post> getPosts(int page,int size, String sortField, String sortDir,
+    public Page<Post> getPosts(int page,int size, String sortField, String sortDirection,
                                List<Integer> tagIds, List<String> selectedAuthors){
         Sort sort;
-        if(sortDir.equals("desc")){
+        if(sortDirection.equals("desc")){
             sort = Sort.by(sortField).descending();
         }else{
             sort = Sort.by(sortField).ascending();
         }
         Pageable pageable = PageRequest.of(page,size,sort);
         Page<Post> postPage;
-        if((tagIds==null||tagIds.isEmpty()) && (selectedAuthors==null || selectedAuthors.isEmpty())){
+
+        if((tagIds == null || tagIds.isEmpty()) && (selectedAuthors == null || selectedAuthors.isEmpty())){
             postPage = postRepository.findAll(pageable);
-        }else if(selectedAuthors==null || selectedAuthors.isEmpty()){
+        } else if (selectedAuthors==null || selectedAuthors.isEmpty()){
             postPage = postRepository.findByFilteredTags(tagIds,pageable);
-        }else if(tagIds==null||tagIds.isEmpty()){
+        } else if (tagIds==null || tagIds.isEmpty()){
             postPage = postRepository.findByFilteredAuthor(selectedAuthors,pageable);
-        }else{
+        } else {
             postPage = postRepository.findByFilteredAuthorAndTags(tagIds,selectedAuthors,pageable);
         }
        return postPage;
@@ -54,31 +55,20 @@ public class PostService {
         post.setPublished(true);
         post.setCreatedAt(new Date());
 
-        List<Tag> tags = new ArrayList<>();
-        for(int tagId : tagIds){
-            Optional<Tag> tagOptional = tagRepository.findById(tagId);
-            if(tagOptional.isPresent()){
-                Tag tag = tagOptional.get();
-                if(tag.getPosts()==null){
-                    tag.setPosts(new ArrayList<>());
-                }
-                tag.getPosts().add(post);
-                tags.add(tag);
-            }
-        }
+        List<Tag> tags = tagRepository.findAllById(tagIds);
         post.setTags(tags);
         postRepository.save(post);
     }
 
-    public void deletePost(Integer id) {
-        postRepository.deleteById(id);
+    public void deletePost(Integer postId) {
+        postRepository.deleteById(postId);
     }
 
-    public Post getPostById(Integer id) {
-        Optional<Post> postOptional = postRepository.findById(id);
-        if(postOptional.isPresent()){
+    public Post getPostById(Integer postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if(postOptional.isPresent()) {
             return postOptional.get();
-        }else{
+        } else {
             return null;   //TODO : Throw new post now found exception
         }
     }
@@ -89,7 +79,7 @@ public class PostService {
         post.setPublishedAt(oldPost.getPublishedAt());
         post.setCreatedAt(oldPost.getCreatedAt());
         post.setUpdatedAt(new Date());
-        if(oldPost.getComments() != null){
+        if(oldPost.getComments() != null) {
             post.setComments(oldPost.getComments());
         }
 
@@ -109,10 +99,21 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<Post> getPostBySearch(String keyword,int page, int size){
+    public Page<Post> getPostBySearch(String keyword,int page, int size,
+                                      List<Integer> selectedTagIds, List<String> selectedAuthors){
         Sort sort = Sort.by("publishedAt").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return postRepository.findPostBySearch(keyword,pageable);
+        if((selectedTagIds == null || selectedTagIds.isEmpty()) &&
+                (selectedAuthors == null || selectedAuthors.isEmpty())){
+            return postRepository.findPostBySearch(keyword,pageable);
+        } else if(selectedTagIds == null || selectedTagIds.isEmpty()){
+            return postRepository.findPostBySearchAndSelectedAuthors(keyword, selectedAuthors, pageable);
+        } else if(selectedAuthors == null || selectedAuthors.isEmpty()){
+            return postRepository.findPostBySearchAndSelectedTagIds(keyword, selectedTagIds, pageable);
+        } else {
+            return postRepository.findPostBySearchAndAuthorAndTag(keyword, selectedAuthors,
+                                          selectedTagIds, pageable);
+        }
     }
 
     public List<String> getAuthors() {

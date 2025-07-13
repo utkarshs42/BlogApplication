@@ -124,8 +124,7 @@
     <button class="dot-button">&#x22EE;</button>
     <div class="menu-content">
       <a th:href="@{'/posts/edit/' + ${post.id}}">Edit</a>
-      <form th:action="@{'/posts/deletePost'}" method="post">
-        <input type="hidden" name="id" th:value="${post.id}" />
+      <form th:action="@{'/posts/' + ${post.id} + '/delete'}" method="post">
         <input type="submit" value="Delete" />
       </form>
     </div>
@@ -139,7 +138,7 @@
   </div>
 
   <div class="actions">
-    <a th:href="@{'/comments/' + ${post.id}}">Comment</a>
+    <a th:href="@{'/comments/post/' + ${post.id}}">Comment</a>
   </div>
 </div>
 </body>

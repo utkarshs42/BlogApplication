@@ -17,7 +17,7 @@ public class Comment {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "comment")
+    @Column(name = "content")
     private String content;
 
     @Column(name = "created_at")

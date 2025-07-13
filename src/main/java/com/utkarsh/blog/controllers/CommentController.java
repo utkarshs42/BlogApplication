@@ -17,39 +17,40 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/{postId}")
-    public String getComment(@PathVariable Integer postId, Model model){
+    @GetMapping("/post/{postId}")
+    public String getCommentsByPostId(@PathVariable Integer postId, Model model){
         List<Comment> comments = commentService.getCommentsByPostId(postId);
         model.addAttribute("postId",postId);
         model.addAttribute("comments", comments);
-        return "view-comments";
+        return "comments/view";
     }
 
-    @PostMapping("/add")
-    public String addComment(@RequestParam("postId") Integer postId,
+    @PostMapping("/post/{postId}")
+    public String addComment(@PathVariable Integer postId,
                              @RequestParam("name") String name,
                              @RequestParam("email") String email,
                              @RequestParam("content") String content){
         commentService.addComment(postId,name,email,content);
-        return "redirect:/comments/" + postId;
+        return "redirect:/comments/post/" + postId;
     }
 
-    @PostMapping("/delete")
-    public String deleteComment(@RequestParam("id") Integer id,
+    @PostMapping("/{commentId}/delete")
+    public String deleteComment(@PathVariable Integer commentId,
                                 @RequestParam("postId") Integer postId){
-        commentService.deleteById(id);
-        return "redirect:/comments/" + postId;
+        commentService.deleteById(commentId);
+        return "redirect:/comments/post/" + postId;
     }
-    @GetMapping("/edit")
-    public String editComment(@RequestParam("id") Integer id, Model model){
-        Comment comment = commentService.getCommentById(id);
+
+    @GetMapping("/{commentId}/edit")
+    public String editComment(@PathVariable Integer commentId, Model model){
+        Comment comment = commentService.getCommentById(commentId);
         model.addAttribute("comment",comment);
-        return "edit-comment";
+        return "comments/edit";
     }
 
     @PostMapping("/update")
     public String updateComment(@ModelAttribute Comment comment){
         commentService.updateComment(comment);
-        return "redirect:/comments/" + comment.getPost().getId();
+        return "redirect:/comments/post/" + comment.getPost().getId();
     }
 }

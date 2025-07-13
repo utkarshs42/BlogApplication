@@ -14,8 +14,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/posts")
 public class PostController {
-    private PostService postService;
-    private TagService tagService;
+    private final PostService postService;
+    private final TagService tagService;
 
     public PostController(PostService postService, TagService tagService){
         this.postService = postService;
@@ -33,7 +33,7 @@ public class PostController {
                            Model model){
         Page<Post> postPage;
         if (keyword != null && !keyword.isBlank()) {
-            postPage = postService.getPostBySearch(keyword, page, size);
+            postPage = postService.getPostBySearch(keyword, page, size, selectedTagIds, selectedAuthors);
         } else {
             postPage = postService.getPosts(page, size, sortField, sortDirection, selectedTagIds, selectedAuthors);
         }
@@ -41,29 +41,28 @@ public class PostController {
         List<String> authors = postService.getAuthors();
 
         model.addAttribute("posts",postPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", postPage.getTotalPages());
         model.addAttribute("keyword",keyword);
 
         model.addAttribute("tags",tags);
-        model.addAttribute("selectedTagIds", selectedTagIds);
-
         model.addAttribute("authors",authors);
+        model.addAttribute("selectedTagIds", selectedTagIds);
         model.addAttribute("selectedAuthors",selectedAuthors);
 
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDirection", sortDirection);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
 
-        return "homePage";
+        return "posts/home";
     }
 
     @GetMapping("/new-post")
-    public String newPost(Model model){
+    public String getNewPostForm(Model model){
         Post post = new Post();
         model.addAttribute("post", post);
         List<Tag> tagList = tagService.getTags();
         model.addAttribute("tagList",tagList);
-        return "new-post";
+        return "posts/new";
     }
 
     @PostMapping("/add")
@@ -73,9 +72,9 @@ public class PostController {
         return "redirect:/posts";
     }
 
-    @PostMapping("/deletePost")
-    public String deletePost(@RequestParam("id") Integer id){
-        postService.deletePost(id);
+    @PostMapping("/{postId}/delete")
+    public String deletePost(@PathVariable Integer postId){
+        postService.deletePost(postId);
         return "redirect:/posts";
     }
 
@@ -83,16 +82,16 @@ public class PostController {
     public String getPost(@PathVariable Integer id, Model model){
         Post post = postService.getPostById(id);
         model.addAttribute("post",post);
-        return "view-post";
+        return "posts/view";
     }
 
     @GetMapping("/edit/{id}")
-    public String editPost(@PathVariable Integer id,Model model){
+    public String getEditPostPage(@PathVariable Integer id, Model model){
         Post post = postService.getPostById(id);
         List<Tag> tagList = tagService.getTags();
         model.addAttribute("tagList",tagList);
         model.addAttribute("post",post);
-        return "edit-post";
+        return "posts/edit";
     }
 
     @PostMapping("/update")
@@ -121,6 +120,6 @@ public class PostController {
         model.addAttribute("sortField", "publishedAt");
         model.addAttribute("sortDir", "desc");
 
-        return "homePage";
+        return "posts/home";
     }*/
 }

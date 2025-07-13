@@ -19,10 +19,10 @@ public class TagController {
     }
 
     @GetMapping("/new")
-    public String newTag(Model model){
+    public String getNewTagForm(Model model){
         Tag tag = new Tag();
         model.addAttribute("tag",tag);
-        return "new-tag";
+        return "tags/new";
     }
 
     @PostMapping("/add")

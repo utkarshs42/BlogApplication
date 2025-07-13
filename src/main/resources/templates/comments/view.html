@@ -106,13 +106,10 @@
         <div class="menu">
             <button style="background: none; border: none;">&#x22EE;</button>
             <div class="menu-content">
-                <form th:action="@{/comments/edit}" method="get">
-                    <input type="hidden" name="id" th:value="${comment.id}" />
-                    <input type="hidden" name="postId" th:value="${postId}" />
+                <form th:action="@{/comments/{id}/edit(id=${comment.id})}" method="get">
                     <input type="submit" value="Edit" />
                 </form>
-                <form th:action="@{/comments/delete}" method="post">
-                    <input type="hidden" name="id" th:value="${comment.id}" />
+                <form th:action="@{/comments/{id}/delete(id=${comment.id})}" method="post">
                     <input type="hidden" name="postId" th:value="${postId}" />
                     <input type="submit" value="Delete" />
                 </form>
@@ -123,8 +120,7 @@
 
 <div class="add-comment">
     <h3>Add a Comment</h3>
-    <form th:action="@{/comments/add}" method="post">
-        <input type="hidden" name="postId" th:value="${postId}"  />
+    <form th:action="@{/comments/post/{postId}(postId=${postId})}" method="post">
 
         <label>Name:</label>
         <input type="text" name="name" required />
