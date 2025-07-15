@@ -17,7 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.author) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Post> findPostBySearch(@Param("keyword") String keyword, Pageable pageable);
 
@@ -25,25 +24,22 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
              "t.id IN :tagIds")
     Page<Post> findByFilteredTags(@Param("tagIds") List<Integer> tagIds, Pageable pageable);
 
-    @Query("SELECT DISTINCT p FROM Post p WHERE p.author IN :selectedAuthors")
+    @Query("SELECT DISTINCT p FROM Post p WHERE p.author.name IN :selectedAuthors")
     Page<Post> findByFilteredAuthor(@Param("selectedAuthors")List<String> selectedAuthors, Pageable pageable);
 
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t WHERE " +
-            "t.id IN :tagIds AND p.author IN :selectedAuthors")
+            "t.id IN :tagIds AND p.author.name IN :selectedAuthors")
     Page<Post> findByFilteredAuthorAndTags(@Param("tagIds")List<Integer> tagIds,
                                            @Param("selectedAuthors")List<String> selectedAuthors,
                                            Pageable pageable);
 
-    @Query("SELECT DISTINCT p.author FROM Post p")
-    List<String> getAuthors();
 
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t WHERE " +
             "(LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.author) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-            "p.author IN :selectedAuthors")
+            "p.author.name IN :selectedAuthors")
     Page<Post> findPostBySearchAndSelectedAuthors(@Param("keyword") String keyword,
                                                   @Param("selectedAuthors") List<String> selectedAuthors,
                                                   Pageable pageable);
@@ -52,7 +48,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "(LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.author) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
             "t.id IN :selectedTagIds")
     Page<Post> findPostBySearchAndSelectedTagIds(@Param("keyword") String keyword,
@@ -63,10 +58,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "(LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.author) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "+
             "LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%')) ) AND " +
             "t.id IN :selectedTagIds AND " +
-            "p.author IN :selectedAuthors")
+            "p.author.name IN :selectedAuthors")
     Page<Post> findPostBySearchAndAuthorAndTag(@Param("keyword") String keyword,
                                                @Param("selectedAuthors") List<String> selectedAuthors,
                                                @Param("selectedTagIds") List<Integer> selectedTagIds,

@@ -23,8 +23,9 @@ public class Post {
     @Basic(fetch = FetchType.LAZY)
     private String content;
 
-    @Column(name = "author")
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User author;
 
     @Column(name = "is_published")
     private boolean isPublished;
@@ -81,11 +82,11 @@ public class Post {
         this.content = content;
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 

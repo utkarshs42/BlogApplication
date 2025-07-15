@@ -2,8 +2,10 @@ package com.utkarsh.blog.services;
 
 import com.utkarsh.blog.models.Post;
 import com.utkarsh.blog.models.Tag;
+import com.utkarsh.blog.models.User;
 import com.utkarsh.blog.repositories.PostRepository;
 import com.utkarsh.blog.repositories.TagRepository;
+import com.utkarsh.blog.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,10 +24,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, TagRepository tagRepository){
+    public PostService(PostRepository postRepository, TagRepository tagRepository, UserRepository userRepository){
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
+        this.userRepository = userRepository;
     }
 
     public Page<Post> getPosts(int page,int size, String sortField, String sortDirection,
@@ -50,7 +55,12 @@ public class PostService {
        return postPage;
     }
 
-    public void addPost(Post post , List<Integer> tagIds) {
+    public void addPost(Post post , List<Integer> tagIds, Principal principal) {
+        String userEmail = principal.getName();
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if(userOptional.isPresent()){
+            post.setAuthor(userOptional.get());
+        }
         post.setPublishedAt(new Date());
         post.setPublished(true);
         post.setCreatedAt(new Date());
@@ -114,9 +124,5 @@ public class PostService {
             return postRepository.findPostBySearchAndAuthorAndTag(keyword, selectedAuthors,
                                           selectedTagIds, pageable);
         }
-    }
-
-    public List<String> getAuthors() {
-        return postRepository.getAuthors();
     }
 }

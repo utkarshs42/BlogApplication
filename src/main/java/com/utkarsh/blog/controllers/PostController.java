@@ -2,13 +2,17 @@ package com.utkarsh.blog.controllers;
 
 import com.utkarsh.blog.models.Post;
 import com.utkarsh.blog.models.Tag;
+import com.utkarsh.blog.models.User;
 import com.utkarsh.blog.services.PostService;
 import com.utkarsh.blog.services.TagService;
+import com.utkarsh.blog.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -16,10 +20,12 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
     private final TagService tagService;
+    private final UserService userService;
 
-    public PostController(PostService postService, TagService tagService){
+    public PostController(PostService postService, TagService tagService, UserService userService){
         this.postService = postService;
         this.tagService = tagService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -38,13 +44,13 @@ public class PostController {
             postPage = postService.getPosts(page, size, sortField, sortDirection, selectedTagIds, selectedAuthors);
         }
         List<Tag> tags = tagService.getTags();
-        List<String> authors = postService.getAuthors();
+        List<String> authors = userService.getAllAuthorsName();
 
         model.addAttribute("posts",postPage.getContent());
         model.addAttribute("keyword",keyword);
 
         model.addAttribute("tags",tags);
-        model.addAttribute("authors",authors);
+        model.addAttribute("authors", authors);
         model.addAttribute("selectedTagIds", selectedTagIds);
         model.addAttribute("selectedAuthors",selectedAuthors);
 
@@ -67,15 +73,23 @@ public class PostController {
 
     @PostMapping("/add")
     public String addPost(@ModelAttribute("post") Post post,
-                          @RequestParam("selectedTagIds") List<Integer> selectedTagIds){
-        postService.addPost(post, selectedTagIds);
+                          @RequestParam("selectedTagIds") List<Integer> selectedTagIds,
+                          Principal principal){
+        postService.addPost(post, selectedTagIds, principal);
         return "redirect:/posts";
     }
 
     @PostMapping("/{postId}/delete")
-    public String deletePost(@PathVariable Integer postId){
-        postService.deletePost(postId);
-        return "redirect:/posts";
+    public String deletePost(@PathVariable Integer postId, Principal principal){
+        Post post = postService.getPostById(postId);
+        User currentUser = userService.findByEmail(principal.getName());
+        if (!post.getAuthor().getEmail().equals(currentUser.getEmail())
+                && !currentUser.getRole().equals("ROLE_ADMIN")) {
+            return "error/403";
+        }else{
+            postService.deletePost(postId);
+            return "redirect:/posts";
+        }
     }
 
     @GetMapping("/{id}")
@@ -86,12 +100,18 @@ public class PostController {
     }
 
     @GetMapping("/edit/{id}")
-    public String getEditPostPage(@PathVariable Integer id, Model model){
+    public String getEditPostPage(@PathVariable Integer id, Principal principal ,Model model){
         Post post = postService.getPostById(id);
-        List<Tag> tagList = tagService.getTags();
-        model.addAttribute("tagList",tagList);
-        model.addAttribute("post",post);
-        return "posts/edit";
+        User currentUser = userService.findByEmail(principal.getName());
+        if (!post.getAuthor().getEmail().equals(currentUser.getEmail())
+                && !currentUser.getRole().equals("ROLE_ADMIN")) {
+            return "error/403";
+        }else{
+            List<Tag> tagList = tagService.getTags();
+            model.addAttribute("tagList",tagList);
+            model.addAttribute("post",post);
+            return "posts/edit";
+        }
     }
 
     @PostMapping("/update")
