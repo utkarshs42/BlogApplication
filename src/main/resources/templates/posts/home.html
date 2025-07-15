@@ -133,7 +133,7 @@
 </head>
 <body>
 
-<h1>All Blog Posts</h1>
+<h1><a th:href="@{/posts}" style="text-decoration: none; color: inherit;">All Blog Posts</a></h1>
 
 <div class="container">
     <!-- Sidebar Filter -->
@@ -242,22 +242,54 @@
             <p>No posts found.</p>
         </div>
 
+
         <!-- Pagination -->
         <div class="pagination" th:if="${totalPages > 1}">
-            <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+            <!-- Previous Button -->
+            <a th:if="${currentPage > 0}"
                th:href="@{/posts(
-                   page=${i},
-                   size=10,
-                   sortField=${sortField},
-                   sortDirection=${sortDirection},
-                   keyword=${keyword},
-                   tagIds=${selectedTagIds},
-                   selectedAuthors=${selectedAuthors}
-               )}"
+           page=${currentPage - 1},
+           size=10,
+           sortField=${sortField},
+           sortDirection=${sortDirection},
+           keyword=${keyword},
+           tagIds=${selectedTagIds},
+           selectedAuthors=${selectedAuthors}
+       )}">Previous</a>
+
+            <!-- Limited Page Links (max 10) -->
+            <a th:each="i : ${#numbers.sequence(
+                     T(java.lang.Math).max(0, currentPage - 5),
+                     T(java.lang.Math).min(totalPages - 1, currentPage + 4)
+                 )}"
+               th:href="@{/posts(
+           page=${i},
+           size=10,
+           sortField=${sortField},
+           sortDirection=${sortDirection},
+           keyword=${keyword},
+           tagIds=${selectedTagIds},
+           selectedAuthors=${selectedAuthors}
+       )}"
                th:text="${i + 1}"
                th:classappend="${i == currentPage} ? 'active'">
             </a>
+
+            <!-- Next Button -->
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/posts(
+           page=${currentPage + 1},
+           size=10,
+           sortField=${sortField},
+           sortDirection=${sortDirection},
+           keyword=${keyword},
+           tagIds=${selectedTagIds},
+           selectedAuthors=${selectedAuthors}
+       )}">Next</a>
         </div>
+        <p style="text-align: center; margin-top: 10px;">
+            Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">10</span>
+        </p>
 
     </div>
 </div>

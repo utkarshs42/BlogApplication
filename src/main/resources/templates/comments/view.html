@@ -14,6 +14,20 @@
             text-align: center;
         }
 
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-button:hover {
+            background-color: #333;
+        }
+
         .comment-box {
             background-color: #fff;
             padding: 15px;
@@ -88,11 +102,17 @@
             border: none;
             cursor: pointer;
         }
+
+        input[type="submit"]:hover {
+            background-color: #333;
+        }
     </style>
 </head>
 <body>
 
 <h2>Comments</h2>
+
+<a th:href="@{/posts/{id}(id=${postId})}" class="back-button">⬅ Back to Post</a>
 
 <div th:if="${comments != null}">
     <div th:each="comment : ${comments}" class="comment-box">
