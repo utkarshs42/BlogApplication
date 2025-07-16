@@ -64,9 +64,10 @@ public class PostService {
         post.setPublishedAt(new Date());
         post.setPublished(true);
         post.setCreatedAt(new Date());
-
-        List<Tag> tags = tagRepository.findAllById(tagIds);
-        post.setTags(tags);
+        if(tagIds!=null){
+            List<Tag> tags = tagRepository.findAllById(tagIds);
+            post.setTags(tags);
+        }
         postRepository.save(post);
     }
 
@@ -135,9 +136,10 @@ public class PostService {
         post.setPublishedAt(new Date());
         post.setPublished(true);
         post.setCreatedAt(new Date());
-
-        List<Tag> tags = tagRepository.findAllById(selectedTagIds);
-        post.setTags(tags);
+         if(selectedTagIds !=null){
+             List<Tag> tags = tagRepository.findAllById(selectedTagIds);
+             post.setTags(tags);
+         }
         postRepository.save(post);
     }
 }

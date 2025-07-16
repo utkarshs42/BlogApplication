@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px auto;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create Your Account</h2>
+
+<form th:action="@{/admin-signup}" method="post" th:object="${user}">
+    <label th:for="name">Name:</label>
+    <input type="text" th:field="*{name}" required />
+
+    <label th:for="email">Email:</label>
+    <input type="email" th:field="*{email}" required />
+
+    <label th:for="password">Password:</label>
+    <input type="password" th:field="*{password}" required />
+
+    <button type="submit">Sign Up</button>
+</form>
+
+<div class="login-link">
+    <p>Already have an account? <a th:href="@{/login-page}">Login here</a></p>
+</div>
+
+</body>
+</html>

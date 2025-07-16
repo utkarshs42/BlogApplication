@@ -36,6 +36,25 @@ public class AuthController {
             model.addAttribute("error", "Email already in use");
             return "sign-up";
         }
+        user.setRole("ROLE_USER");
+        userService.addUser(user);
+        return "redirect:/login-page?signupSuccess";
+    }
+
+    @GetMapping("/admin-signup")
+    public String getAdminSignUpPage(Model model){
+        User user = new User();
+        model.addAttribute("user",user);
+        return "admin-sign-up";
+    }
+
+    @PostMapping("/admin-signup")
+    public String handleAdminSignup(@ModelAttribute("user") User user, Model model) {
+        if (userService.findByEmail(user.getEmail()) != null) {
+            model.addAttribute("error", "Email already in use");
+            return "sign-up";
+        }
+        user.setRole("ROLE_ADMIN");
         userService.addUser(user);
         return "redirect:/login-page?signupSuccess";
     }

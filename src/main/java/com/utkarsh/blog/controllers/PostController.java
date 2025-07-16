@@ -75,7 +75,7 @@ public class PostController {
 
     @PostMapping("/add")
     public String addPost(@ModelAttribute("post") Post post,
-                          @RequestParam("selectedTagIds") List<Integer> selectedTagIds,
+                          @RequestParam(value = "selectedTagIds", required = false) List<Integer> selectedTagIds,
                           @RequestParam(value = "selectedAuthor", required = false) String selectedAuthor,
                           Principal principal){
 

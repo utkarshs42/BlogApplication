@@ -79,20 +79,18 @@
         <option th:each="tag : ${tagList}" th:value="${tag.id}" th:text="${tag.name}"></option>
     </select>
 
-    <!-- Show only for ADMIN -->
-    <sec:authorize access="hasRole('ROLE_ADMIN')">
+    <!-- Show only for ROLE_ADMIN -->
+    <div sec:authorize="hasAuthority('ROLE_ADMIN')">
         <label for="selectedAuthor">Select Author (Optional):</label>
         <select name="selectedAuthor" id="selectedAuthor">
             <option value="">-- Select an Author --</option>
             <option th:each="author : ${authorNames}"
                     th:value="${author}"
-                    th:text="${author}">
-            </option>
+                    th:text="${author}"></option>
         </select>
-    </sec:authorize>
+    </div>
 
     <button type="submit">Publish</button>
 </form>
-
 </body>
 </html>
