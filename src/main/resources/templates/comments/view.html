@@ -123,6 +123,7 @@
             <small th:if="${comment.updatedAt != null}" th:text="'Updated: ' + ${#dates.format(comment.updatedAt, 'dd MMM yyyy HH:mm')}">Updated</small>
         </div>
 
+        <div th:if="${#authentication.name == comment.post.author.email or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
         <div class="menu">
             <button style="background: none; border: none;">&#x22EE;</button>
             <div class="menu-content">
@@ -134,6 +135,7 @@
                     <input type="submit" value="Delete" />
                 </form>
             </div>
+        </div>
         </div>
     </div>
 </div>

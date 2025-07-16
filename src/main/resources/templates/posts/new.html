@@ -1,15 +1,61 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity">
 <head>
     <title>Create New Post</title>
     <style>
-        select[multiple] {
-            width: 300px;
-            height: 120px;
-            overflow-y: auto;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #000;
         }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
         label {
             font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        select[multiple] {
+            height: 120px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #333;
         }
     </style>
 </head>
@@ -19,20 +65,31 @@
 
 <form th:action="@{/posts/add}" th:object="${post}" method="post">
 
-    <label for="title">Title:</label><br/>
-    <input type="text" id="title" th:field="*{title}" required/><br/><br/>
+    <label for="title">Title:</label>
+    <input type="text" id="title" th:field="*{title}" required/>
 
-    <label for="excerpt">Excerpt:</label><br/>
-    <textarea id="excerpt" th:field="*{excerpt}" rows="2" cols="40" required></textarea><br/><br/>
+    <label for="excerpt">Excerpt:</label>
+    <textarea id="excerpt" th:field="*{excerpt}" rows="2" required></textarea>
 
-    <label for="content">Content:</label><br/>
-    <textarea id="content" th:field="*{content}" rows="6" cols="60" required></textarea><br/><br/>
+    <label for="content">Content:</label>
+    <textarea id="content" th:field="*{content}" rows="6" required></textarea>
 
-    <label for="tags">Select Tags (max 5):</label><br/>
-    <select name="selectedTagIds" id="tags" multiple size="6">
+    <label for="tags">Select Tags (max 5):</label>
+    <select name="selectedTagIds" id="tags" multiple>
         <option th:each="tag : ${tagList}" th:value="${tag.id}" th:text="${tag.name}"></option>
     </select>
-    <br/><br/>
+
+    <!-- Show only for ADMIN -->
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
+        <label for="selectedAuthor">Select Author (Optional):</label>
+        <select name="selectedAuthor" id="selectedAuthor">
+            <option value="">-- Select an Author --</option>
+            <option th:each="author : ${authorNames}"
+                    th:value="${author}"
+                    th:text="${author}">
+            </option>
+        </select>
+    </sec:authorize>
 
     <button type="submit">Publish</button>
 </form>

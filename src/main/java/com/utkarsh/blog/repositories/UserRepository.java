@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByName(String name);
+
     @Query("SELECT DISTINCT u.name FROM User u")
     List<String> findAllName();
 }

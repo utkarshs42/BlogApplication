@@ -64,18 +64,26 @@ public class PostController {
 
     @GetMapping("/new-post")
     public String getNewPostForm(Model model){
-        Post post = new Post();
-        model.addAttribute("post", post);
         List<Tag> tagList = tagService.getTags();
+        List<String> authorNames = userService.getAllAuthorsName();
+
+        model.addAttribute("authorNames",authorNames);
         model.addAttribute("tagList",tagList);
+        model.addAttribute("post", new Post());
         return "posts/new";
     }
 
     @PostMapping("/add")
     public String addPost(@ModelAttribute("post") Post post,
                           @RequestParam("selectedTagIds") List<Integer> selectedTagIds,
+                          @RequestParam(value = "selectedAuthor", required = false) String selectedAuthor,
                           Principal principal){
-        postService.addPost(post, selectedTagIds, principal);
+
+        if(selectedAuthor == null || selectedAuthor.isEmpty()){
+            postService.addPost(post, selectedTagIds, principal);
+        }else{
+            postService.addPostWithAuthor(post, selectedTagIds, selectedAuthor);
+        }
         return "redirect:/posts";
     }
 

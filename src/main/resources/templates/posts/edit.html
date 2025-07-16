@@ -68,9 +68,6 @@
         <label>Content:</label>
         <textarea th:field="*{content}" rows="6" required></textarea>
 
-        <label>Author:</label>
-        <input type="text" th:field="*{author}" required />
-
         <label>Select Tags (Max 5):</label>
         <select name="selectedTagIds" multiple size="6">
             <option th:each="tag : ${tagList}"

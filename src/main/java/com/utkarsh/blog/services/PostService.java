@@ -125,4 +125,19 @@ public class PostService {
                                           selectedTagIds, pageable);
         }
     }
+
+    public void addPostWithAuthor(Post post, List<Integer> selectedTagIds, String selectedAuthor) {
+        Optional<User> authorOptional = userRepository.findByName(selectedAuthor);
+
+        if(authorOptional.isPresent()){
+            post.setAuthor(authorOptional.get());
+        }
+        post.setPublishedAt(new Date());
+        post.setPublished(true);
+        post.setCreatedAt(new Date());
+
+        List<Tag> tags = tagRepository.findAllById(selectedTagIds);
+        post.setTags(tags);
+        postRepository.save(post);
+    }
 }

@@ -18,9 +18,12 @@ public class SecurityConfiguration {
                         .requestMatchers("/login-page","/signup","/posts").permitAll()
                         .requestMatchers("/posts/new-post","/posts/add")
                                                    .hasAnyRole("USER","ADMIN")
-                        .requestMatchers("/posts/*").permitAll()
                         .requestMatchers("/posts/*/edit").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/posts/*/delete").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/posts/**").permitAll()
+                        .requestMatchers("/comments/post/*").permitAll()
+                        .requestMatchers("/comments/*/edit").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/comments/*/delete").hasAnyRole("USER","ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
