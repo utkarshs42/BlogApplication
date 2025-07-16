@@ -16,7 +16,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login-page","/signup","/posts").permitAll()
+                        .requestMatchers("/login-page","/signup","/posts","/admin-signup").permitAll()
                         .requestMatchers("/posts/new-post","/posts/add")
                                                    .hasAnyRole("USER","ADMIN")
                         .requestMatchers("/posts/*/edit").hasAnyRole("USER","ADMIN")
