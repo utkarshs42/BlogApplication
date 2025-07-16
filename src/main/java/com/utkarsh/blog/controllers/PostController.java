@@ -128,26 +128,4 @@ public class PostController {
         postService.updatePost(post, selectedTagIds);
         return "redirect:/posts/" + post.getId();
     }
-
-   /* @GetMapping("/search")
-    public String getPostBySearch(@RequestParam("keyword") String keyword,
-                                  @RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "9") int size,
-                                  Model model){
-        Page<Post> postPage = postService.getPostBySearch(keyword, page, size);
-        List<Tag> tags = tagService.getTags();
-
-        model.addAttribute("posts", postPage.getContent());
-        model.addAttribute("currentPage",page);
-        model.addAttribute("totalPages",postPage.getTotalPages());
-        model.addAttribute("keyword",keyword);
-
-        model.addAttribute("tags",tags);
-        model.addAttribute("selectedTagIds", null);
-
-        model.addAttribute("sortField", "publishedAt");
-        model.addAttribute("sortDir", "desc");
-
-        return "posts/home";
-    }*/
 }
